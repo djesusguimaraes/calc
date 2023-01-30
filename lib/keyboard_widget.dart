@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:ui_plays/providers/calc_provider.dart';
 
 class KeyBoard extends StatefulWidget {
   const KeyBoard({super.key});
@@ -15,6 +17,8 @@ class _KeyBoardState extends State<KeyBoard> {
     '=': Colors.green,
     'x': Colors.red
   };
+
+  late Map<String, void Function()> customActions;
 
   final Set<String> _buttons = {
     'C',
@@ -43,6 +47,8 @@ class _KeyBoardState extends State<KeyBoard> {
 
   @override
   void initState() {
+    customActions = {};
+
     _buttonsInstances = _buttons.map((e) {
       if (_specialButtons.keys.contains(e)) {
         return _EspecialButton(color: _specialButtons[e]!, simbol: e);
@@ -57,22 +63,19 @@ class _KeyBoardState extends State<KeyBoard> {
     return Scaffold(
       body: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
         Expanded(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: const [
-                Text(
-                  "Tela",
-                  textAlign: TextAlign.end,
-                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 36),
-                ),
-              ]),
-        ),
+            child: Container(
+          color: Colors.grey.shade200,
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Consumer<ExpressionChangeNotifier>(
+                builder: (context, value, child) => Text(value.expression,
+                    textAlign: TextAlign.end, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 36)))
+          ]),
+        )),
         GridView.builder(
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, childAspectRatio: .8),
-            itemBuilder: (_, index) => _buttonsInstances.elementAt(index).render(),
+            itemBuilder: (_, index) => _buttonsInstances.elementAt(index).render(context),
             itemCount: _buttonsInstances.length),
       ]),
     );
@@ -89,7 +92,7 @@ class _EspecialButton extends _Button {
   }) : super(action: action, simbol: simbol);
 
   @override
-  Widget render() {
+  Widget render(BuildContext context) {
     return Padding(
         padding: const EdgeInsets.all(16),
         child: FloatingActionButton(
@@ -112,8 +115,8 @@ class _Button {
     this.action,
   });
 
-  Widget render() => IconButton(
-      onPressed: action,
+  Widget render(BuildContext context) => IconButton(
+      onPressed: action ?? () => Provider.of<ExpressionChangeNotifier>(context, listen: false).addValue(simbol),
       icon: Text(simbol,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
