@@ -26,7 +26,8 @@ class OperatorsBuilder {
   factory OperatorsBuilder.fromJson(Map<String, dynamic> json) {
     Set<Operator> values = {};
     Set<String> simbols = {};
-    if (json.containsKey('operators') && (json['operators'] as List).isNotEmpty) {
+    if (json.containsKey('operators') &&
+        (json['operators'] as List).isNotEmpty) {
       for (var operator in (json['operators'] as List)) {
         values.add(Operator.fromJson(operator));
         simbols.add(operator['simbol']);
@@ -50,6 +51,7 @@ var jsonOperators = {
     {'simbol': '-', 'precedence': 1, 'is_binary': true},
     {'simbol': '/', 'precedence': 2, 'is_binary': true},
     {'simbol': '%', 'precedence': 3, 'is_binary': false},
+    {'simbol': '!', 'precedence': 3, 'is_binary': false},
     {'simbol': '^', 'precedence': 3, 'is_binary': true},
   ]
 };

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ui_plays/utils/money_formatter_util.dart';
+import 'package:ui_plays/utils/mark_thousand_util.dart';
 
 import '../models/operators_model.dart';
 import 'calc_functions/evaluate_expression_function.dart';
@@ -22,14 +22,27 @@ class ExpressionChangeNotifier extends ChangeNotifier {
 
   void backSpace() {
     if (expression.isNotEmpty) {
-      expression.removeLast();
+      var last = expression.removeLast().replaceAll(',', '');
+      if (num.tryParse(last) != null) {
+        if (last.length > 1) {
+          var backspace = last.length - 1;
+
+          if (last[last.length - 2] == '.') backspace--;
+
+          expression.add(markThousand(last.substring(0, backspace)));
+        }
+      }
       notifyListeners();
     }
   }
 
-  void changeSign() {}
+  void changeSign() {
+    // TODO: O controller deve indicar o valor a ter o sinal alterado
+  }
 
-  void addParenthesis() {}
+  void addParenthesis() {
+    // TODO: A expressão deve ser transformada para a forma pós-fixa para verificar um parenteses aberto
+  }
 
   void evaluate() {
     var treatedExpression = expression.join(' ').replaceAll(',', '');
@@ -38,9 +51,12 @@ class ExpressionChangeNotifier extends ChangeNotifier {
   }
 
   void addValue(String value) {
-    var realExpression = expression.isNotEmpty ? expression.last.replaceAll(',', '') : '';
-    bool isLastValueANumber = expression.isNotEmpty ? num.tryParse(realExpression) != null : false;
-    bool isLastADot = expression.isNotEmpty ? realExpression.split('').last == '.' : false;
+    var realExpression =
+        expression.isNotEmpty ? expression.last.replaceAll(',', '') : '';
+    bool isLastValueANumber =
+        expression.isNotEmpty ? num.tryParse(realExpression) != null : false;
+    bool isLastADot =
+        expression.isNotEmpty ? realExpression.split('').last == '.' : false;
 
     if (value == '.' && isLastADot) return;
 
@@ -52,16 +68,10 @@ class ExpressionChangeNotifier extends ChangeNotifier {
 
     bool shouldConcatenate = numberAndNumber || dotAndNumber || numberAndDot;
     if (shouldConcatenate) {
-      if (expression.isEmpty) {
-        expression.add(value);
-        notifyListeners();
-        return;
-      }
-
       if (!expression.last.contains('.') && isValueANumber) {
         if (expression.last.length >= 3) {
           var newValue = expression.removeLast().replaceAll(',', '') + value;
-          expression.add(moneyFormat(newValue));
+          expression.add(markThousand(newValue));
           notifyListeners();
           return;
         }
@@ -74,7 +84,9 @@ class ExpressionChangeNotifier extends ChangeNotifier {
     }
 
     bool isValueAnOperator = builder.itsOperator(value) != null;
-    bool isLastValueAnOperator = expression.isNotEmpty ? builder.itsOperator(realExpression) != null : false;
+    bool isLastValueAnOperator = expression.isNotEmpty
+        ? builder.itsOperator(realExpression) != null
+        : false;
     if (isValueAnOperator && isLastValueAnOperator) {
       expression.removeLast();
       expression.add(value);
