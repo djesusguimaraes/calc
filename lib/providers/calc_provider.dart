@@ -1,18 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:ui_plays/utils/mark_thousand_util.dart';
+import 'package:ui_plays/domain/models/expression_status_model.dart';
+import 'package:ui_plays/domain/utils/string_list_index_adapter_util.dart';
+import 'package:ui_plays/providers/calc_functions/postfix_conversion_function.dart';
+import 'package:ui_plays/domain/utils/mark_thousand_util.dart';
 
-import '../models/operators_model.dart';
+import '../domain/models/operators_model.dart';
 import 'calc_functions/evaluate_expression_function.dart';
 
-class ExpressionChangeNotifier extends ChangeNotifier {
+class ExpressionChangeNotifier extends ChangeNotifier
+    with StringListIndexAdapterUtil {
   List<String> expression = [];
   String result = '';
+  String _partialResult = '';
 
-  OperatorsBuilder builder;
+  ExpressionStatus status = ExpressionStatus();
+
+  OperatorsProvider builder;
 
   ExpressionChangeNotifier(this.builder);
 
   String get expressionString => expression.join(' ');
+
+  String get resultString => result.isEmpty ? _partialResult : result;
+
+  bool get isResult => result.isNotEmpty;
 
   void clear() {
     expression.clear();
@@ -32,25 +43,42 @@ class ExpressionChangeNotifier extends ChangeNotifier {
           expression.add(markThousand(last.substring(0, backspace)));
         }
       }
+      _evaluatePartial();
       notifyListeners();
     }
   }
 
-  void changeSign() {
-    // TODO: O controller deve indicar o valor a ter o sinal alterado
+  void changeSign(int offset) {
+    var index = foundItemIndexByCursorPos(
+        offset: offset,
+        expressionString: expressionString,
+        expression: expression);
+
+    if (index < 0) return;
+
+    // TODO: Implementar troca de sinal para o elemento identificado pelo index
   }
 
   void addParenthesis() {
-    // TODO: A expressão deve ser transformada para a forma pós-fixa para verificar um parenteses aberto
+    _addValue(status.thereIsOpenParenthesis ? ')' : '(');
+    _updateStatus();
   }
 
   void evaluate() {
-    var treatedExpression = expression.join(' ').replaceAll(',', '');
-    result = evaluateExpression(builder, treatedExpression).toString();
-    notifyListeners();
+    if (!status.thereIsOpenParenthesis) {
+      var treatedExpression = expression.join(' ').replaceAll(',', '');
+      result = evaluateExpression(builder, treatedExpression).toString();
+      notifyListeners();
+    }
   }
 
   void addValue(String value) {
+    _addValue(value);
+    _updateStatus();
+    _evaluatePartial();
+  }
+
+  void _addValue(String value) {
     var realExpression =
         expression.isNotEmpty ? expression.last.replaceAll(',', '') : '';
     bool isLastValueANumber =
@@ -96,5 +124,24 @@ class ExpressionChangeNotifier extends ChangeNotifier {
 
     expression.add(value);
     notifyListeners();
+  }
+
+  void _evaluatePartial() {
+    if (expression.isNotEmpty && !status.thereIsOpenParenthesis) {
+      if (num.tryParse(expression.last) != null) {
+        var treatedExpression = expression.join(' ').replaceAll(',', '');
+        _partialResult =
+            evaluateExpression(builder, treatedExpression).toString();
+      } else {
+        _partialResult = '';
+      }
+      notifyListeners();
+    }
+  }
+
+  void _updateStatus() {
+    if (expression.isNotEmpty) {
+      status = infixToPostfix(builder, expression.join(' '));
+    }
   }
 }
