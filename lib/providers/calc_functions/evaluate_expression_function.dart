@@ -3,7 +3,7 @@ import 'dart:math';
 import '../../domain/models/operators_model.dart';
 import 'postfix_conversion_function.dart';
 
-num evaluateExpression(OperatorsBuilder builder, String infix) {
+num evaluateExpression(OperatorsProvider builder, String infix) {
   var status = infixToPostfix(builder, infix);
 
   List<num> stack = [];
