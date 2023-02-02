@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ui_plays/domain/utils/string_list_index_adapter_util.dart';
 
@@ -12,79 +14,60 @@ void main() {
     late StringListAdapterTest stringListAdapter;
     setUp(() => stringListAdapter = StringListAdapterTest());
 
-    test('Deve indentificar um elemento no array baseada em uma string', () {
-      expect(
+    test(
+        'Deve indentificar o elemento "0" no array baseada nos offsets no intervalo [0-4]',
+        () {
+      for (var i = 0; i < 5; i++) {
+        expect(
           stringListAdapter.foundItemIndexByCursorPos(
-              offset: 0,
+              offset: i,
               expressionString: expressionString,
               expression: expression),
-          0);
-      expect(
+          0,
+        );
+      }
+    });
+
+    test(
+        'Deve indentificar o elemento "2" no array baseada nos offsets no intervalo [7-10]',
+        () {
+      for (var i = 7; i < 11; i++) {
+        expect(
           stringListAdapter.foundItemIndexByCursorPos(
-              offset: 1,
+              offset: i,
               expressionString: expressionString,
               expression: expression),
-          0);
+          2,
+        );
+      }
+    });
+
+    test(
+        'Deve retornar -1 se o offset estiver fora do intervalo de caracteres da expressão',
+        () {
       expect(
+        stringListAdapter.foundItemIndexByCursorPos(
+            offset: 11,
+            expressionString: expressionString,
+            expression: expression),
+        -1,
+      );
+    });
+
+    test(
+        'Deve retornar o index do número mais próximo se não encontrar um número',
+        () {
+      var expects = [0, 2, 2];
+      for (var i = 5, j = 0; i < 8; i++, j++) {
+        expect(
           stringListAdapter.foundItemIndexByCursorPos(
-              offset: 2,
-              expressionString: expressionString,
-              expression: expression),
-          0);
-      expect(
-          stringListAdapter.foundItemIndexByCursorPos(
-              offset: 3,
-              expressionString: expressionString,
-              expression: expression),
-          0);
-      expect(
-          stringListAdapter.foundItemIndexByCursorPos(
-              offset: 4,
-              expressionString: expressionString,
-              expression: expression),
-          0);
-      expect(
-          stringListAdapter.foundItemIndexByCursorPos(
-              offset: 5,
-              expressionString: expressionString,
-              expression: expression),
-          1);
-      expect(
-          stringListAdapter.foundItemIndexByCursorPos(
-              offset: 6,
-              expressionString: expressionString,
-              expression: expression),
-          1);
-      expect(
-          stringListAdapter.foundItemIndexByCursorPos(
-              offset: 7,
-              expressionString: expressionString,
-              expression: expression),
-          2);
-      expect(
-          stringListAdapter.foundItemIndexByCursorPos(
-              offset: 8,
-              expressionString: expressionString,
-              expression: expression),
-          2);
-      expect(
-          stringListAdapter.foundItemIndexByCursorPos(
-              offset: 9,
-              expressionString: expressionString,
-              expression: expression),
-          2);
-      expect(
-          stringListAdapter.foundItemIndexByCursorPos(
-              offset: 10,
-              expressionString: expressionString,
-              expression: expression),
-          2);
-      expect(
-          stringListAdapter.foundItemIndexByCursorPos(
-              offset: 11,
-              expressionString: expressionString,
-              expression: expression),
-          -1);
+            offset: i,
+            expressionString: expressionString,
+            expression: expression,
+          ),
+          expects.elementAt(j),
+        );
+      }
     });
   });
 }
