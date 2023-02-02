@@ -1,17 +1,23 @@
-import '../../models/operators_model.dart';
+import 'package:ui_plays/domain/models/expression_status_model.dart';
 
-List<String> infixToPostfix(OperatorsBuilder builder, String infix) {
+import '../../domain/models/operators_model.dart';
+
+ExpressionStatus infixToPostfix(OperatorsBuilder builder, String infix) {
   List<String> result = [];
   List<Operator> stack = [];
+
+  bool hasOpenParenthesis = false;
 
   List<String> infixList = infix.split(' ');
   for (var element in infixList) {
     if (element == '(') {
+      hasOpenParenthesis = true;
       stack.add(builder.open);
       continue;
     }
 
     if (element == ')') {
+      hasOpenParenthesis = false;
       var reversed = stack.reversed.toList();
       for (var element in reversed) {
         stack.removeLast();
@@ -53,5 +59,9 @@ List<String> infixToPostfix(OperatorsBuilder builder, String infix) {
     }
   }
 
-  return result;
+  return ExpressionStatus(
+      lastOperandType:
+          result.isNotEmpty ? OperandType.fromString(result.last) : null,
+      thereIsOpenParenthesis: hasOpenParenthesis,
+      postfixExpression: result);
 }

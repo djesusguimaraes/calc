@@ -5,7 +5,7 @@ import 'package:ui_plays/dependency_inject.dart';
 import 'package:ui_plays/providers/calc_provider.dart';
 import 'package:ui_plays/ui/keyboard_widget.dart';
 
-import 'models/operators_model.dart';
+import 'domain/models/operators_model.dart';
 
 void main() {
   initDependencies();

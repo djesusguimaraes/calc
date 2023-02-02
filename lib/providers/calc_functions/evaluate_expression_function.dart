@@ -1,13 +1,14 @@
 import 'dart:math';
 
-import '../../models/operators_model.dart';
+import '../../domain/models/operators_model.dart';
 import 'postfix_conversion_function.dart';
 
 num evaluateExpression(OperatorsBuilder builder, String infix) {
-  List<String> postFixed = infixToPostfix(builder, infix);
+  var status = infixToPostfix(builder, infix);
+
   List<num> stack = [];
 
-  for (var element in postFixed) {
+  for (var element in status.postfixExpression) {
     var operator = builder.itsOperator(element);
     if (operator == null) {
       stack.add(num.parse(element));
