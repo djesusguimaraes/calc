@@ -1,8 +1,9 @@
+import 'package:ui_plays/domain/enums/operand_type_enum.dart';
 import 'package:ui_plays/domain/models/expression_status_model.dart';
 
 import '../../domain/models/operators_model.dart';
 
-ExpressionStatus infixToPostfix(OperatorsBuilder builder, String infix) {
+ExpressionStatus infixToPostfix(OperatorsProvider builder, String infix) {
   List<String> result = [];
   List<Operator> stack = [];
 
