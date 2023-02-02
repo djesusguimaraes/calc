@@ -10,8 +10,8 @@ import 'calc_functions/evaluate_expression_function.dart';
 class ExpressionChangeNotifier extends ChangeNotifier
     with StringListIndexAdapterUtil {
   List<String> expression = [];
-  String result = '';
-  String _partialResult = '';
+  num? result;
+  num _partialResult = 0;
 
   ExpressionStatus status = ExpressionStatus();
 
@@ -30,13 +30,14 @@ class ExpressionChangeNotifier extends ChangeNotifier
     return out.join(' ');
   }
 
-  String get resultString => result.isEmpty ? _partialResult : result;
+  String get resultString =>
+      markThousand((!isResult ? _partialResult : result).toString());
 
-  bool get isResult => result.isNotEmpty;
+  bool get isResult => result != null;
 
   void clear() {
+    result = null;
     expression.clear();
-    result = '';
     notifyListeners();
   }
 
@@ -74,7 +75,7 @@ class ExpressionChangeNotifier extends ChangeNotifier
   void evaluate() {
     if (!status.thereIsOpenParenthesis) {
       var treatedExpression = expression.join(' ');
-      result = evaluateExpression(builder, treatedExpression).toString();
+      result = evaluateExpression(builder, treatedExpression);
       notifyListeners();
     }
   }
@@ -135,10 +136,9 @@ class ExpressionChangeNotifier extends ChangeNotifier
   void _evaluatePartial() {
     if (expression.isNotEmpty && !status.thereIsOpenParenthesis) {
       if (num.tryParse(expression.last) != null) {
-        _partialResult =
-            evaluateExpression(builder, expression.join(' ')).toString();
+        _partialResult = evaluateExpression(builder, expression.join(' '));
       } else {
-        _partialResult = '';
+        _partialResult = 0;
       }
       notifyListeners();
     }
