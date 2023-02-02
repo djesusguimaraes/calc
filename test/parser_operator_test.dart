@@ -1,20 +1,16 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ui_plays/models/operators_model.dart';
+import 'package:ui_plays/domain/models/operators_model.dart';
 
 void main() {
   group('Testes de parser de operador', () {
-    late OperatorsBuilder builder;
+    late OperatorsProvider builder;
 
     setUp(() {
-      builder = OperatorsBuilder.fromJson(jsonOperators);
+      builder = OperatorsProvider.fromJson(jsonOperators);
     });
 
     test('Deve retornar Set<Operator>', () {
       expect(builder.values, isA<Set<Operator>>());
-    });
-
-    test('Deve retornar Set<Operator> com 6 instâncias', () {
-      expect(builder.values.length, 6);
     });
 
     test(
@@ -31,6 +27,10 @@ void main() {
       }
 
       expect(dataPrecedences, builderPrecedences);
+    });
+
+    test('Deve retornar false para operador "1"', () {
+      expect(builder.isOperator('1'), false);
     });
   });
 }

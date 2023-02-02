@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ui_plays/models/operators_model.dart';
+import 'package:ui_plays/domain/models/operators_model.dart';
 import 'package:ui_plays/providers/calc_provider.dart';
 
 void main() {
-  var builder = OperatorsBuilder.fromJson(jsonOperators);
+  var builder = OperatorsProvider.fromJson(jsonOperators);
 
   group('Teste de limpeza e avaliação da expressão evaluate\'()\':', () {
     late ExpressionChangeNotifier provider;
@@ -140,6 +140,28 @@ void main() {
         provider.addValue(value);
       }
       expect(provider.expressionString, '1.2 + 3,333,333');
+    });
+
+    test('Deve inserir um parêntese aberto para a expressão vazia', () {
+      provider.addParenthesis();
+      expect(provider.expression, ['(']);
+    });
+
+    test('Deve inserir um parêntese fechado ")" para a expressão "("', () {
+      provider.addParenthesis();
+      provider.addParenthesis();
+      expect(provider.expression.last, ')');
+    });
+
+    test(
+        'Deve inserir um parêntese fechado ")" para a expressão "1.2 + ( 3 - 1"',
+        () {
+      var values = ['1', '.', '2', '+', '(', '3', '-', '1'];
+      for (var value in values) {
+        provider.addValue(value);
+      }
+      provider.addParenthesis();
+      expect(provider.expression.last, ')');
     });
   });
 }

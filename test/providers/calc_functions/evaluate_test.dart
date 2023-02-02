@@ -1,13 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ui_plays/models/operators_model.dart';
+import 'package:ui_plays/domain/models/operators_model.dart';
 import 'package:ui_plays/providers/calc_functions/evaluate_expression_function.dart';
 
 void main() {
-  group('Testes de valoração de expressão infixa', () {
-    late OperatorsBuilder builder;
+  group('Testes de valoração de expressão infixa:', () {
+    late OperatorsProvider builder;
 
     setUp(() {
-      builder = OperatorsBuilder.fromJson(jsonOperators);
+      builder = OperatorsProvider.fromJson(jsonOperators);
     });
 
     test('A função deve retornar 2 para "1 + 1"', () {
