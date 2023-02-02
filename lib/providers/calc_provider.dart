@@ -73,8 +73,7 @@ class ExpressionChangeNotifier extends ChangeNotifier
 
   void evaluate() {
     if (!status.thereIsOpenParenthesis) {
-      // todo: retirar o replaceAll quando terminar o refact
-      var treatedExpression = expression.join(' ').replaceAll(',', '');
+      var treatedExpression = expression.join(' ');
       result = evaluateExpression(builder, treatedExpression).toString();
       notifyListeners();
     }
