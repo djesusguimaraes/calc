@@ -19,7 +19,16 @@ class ExpressionChangeNotifier extends ChangeNotifier
 
   ExpressionChangeNotifier(this.builder);
 
-  String get expressionString => expression.join(' ');
+  String get expressionString {
+    if (expression.isEmpty) return '';
+
+    List<String> out = [];
+    for (var operand in expression) {
+      out.add(num.tryParse(operand) != null ? markThousand(operand) : operand);
+    }
+
+    return out.join(' ');
+  }
 
   String get resultString => result.isEmpty ? _partialResult : result;
 
@@ -33,14 +42,14 @@ class ExpressionChangeNotifier extends ChangeNotifier
 
   void backSpace() {
     if (expression.isNotEmpty) {
-      var last = expression.removeLast().replaceAll(',', '');
+      var last = expression.removeLast();
       if (num.tryParse(last) != null) {
         if (last.length > 1) {
           var backspace = last.length - 1;
 
           if (last[last.length - 2] == '.') backspace--;
 
-          expression.add(markThousand(last.substring(0, backspace)));
+          expression.add(last.substring(0, backspace));
         }
       }
       _evaluatePartial();
@@ -55,8 +64,6 @@ class ExpressionChangeNotifier extends ChangeNotifier
         expression: expression);
 
     if (index < 0) return;
-
-    // TODO: Implementar troca de sinal para o elemento identificado pelo index
   }
 
   void addParenthesis() {
@@ -66,6 +73,7 @@ class ExpressionChangeNotifier extends ChangeNotifier
 
   void evaluate() {
     if (!status.thereIsOpenParenthesis) {
+      // todo: retirar o replaceAll quando terminar o refact
       var treatedExpression = expression.join(' ').replaceAll(',', '');
       result = evaluateExpression(builder, treatedExpression).toString();
       notifyListeners();
@@ -79,8 +87,7 @@ class ExpressionChangeNotifier extends ChangeNotifier
   }
 
   void _addValue(String value) {
-    var realExpression =
-        expression.isNotEmpty ? expression.last.replaceAll(',', '') : '';
+    var realExpression = expression.isNotEmpty ? expression.last : '';
     bool isLastValueANumber =
         expression.isNotEmpty ? num.tryParse(realExpression) != null : false;
     bool isLastADot =
@@ -98,8 +105,8 @@ class ExpressionChangeNotifier extends ChangeNotifier
     if (shouldConcatenate) {
       if (!expression.last.contains('.') && isValueANumber) {
         if (expression.last.length >= 3) {
-          var newValue = expression.removeLast().replaceAll(',', '') + value;
-          expression.add(markThousand(newValue));
+          var newValue = expression.removeLast() + value;
+          expression.add(newValue);
           notifyListeners();
           return;
         }
@@ -129,9 +136,8 @@ class ExpressionChangeNotifier extends ChangeNotifier
   void _evaluatePartial() {
     if (expression.isNotEmpty && !status.thereIsOpenParenthesis) {
       if (num.tryParse(expression.last) != null) {
-        var treatedExpression = expression.join(' ').replaceAll(',', '');
         _partialResult =
-            evaluateExpression(builder, treatedExpression).toString();
+            evaluateExpression(builder, expression.join(' ')).toString();
       } else {
         _partialResult = '';
       }

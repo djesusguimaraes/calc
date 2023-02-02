@@ -73,7 +73,7 @@ void main() {
       for (var value in values) {
         provider.addValue(value);
       }
-      expect(provider.expression, ['1,234,567,890']);
+      expect(provider.expressionString, '1,234,567,890');
     });
 
     test(
@@ -93,7 +93,7 @@ void main() {
       for (var value in values) {
         provider.addValue(value);
       }
-      expect(provider.expression, ['123,456.890']);
+      expect(provider.expressionString, '123,456.890');
     });
 
     test('Deve remover a última parte da expressão com pontos', () {
@@ -106,7 +106,7 @@ void main() {
       provider.backSpace();
       provider.backSpace();
 
-      expect(provider.expression, ['123,456']);
+      expect(provider.expressionString, '123,456');
     });
 
     test('Deve limpar a expressão e o resultado', () {
