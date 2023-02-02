@@ -20,7 +20,7 @@ void main() {
 
       provider.evaluate();
 
-      expect(provider.result, '4.2');
+      expect(provider.result, 4.2);
     });
 
     test(
@@ -33,7 +33,7 @@ void main() {
 
       provider.evaluate();
 
-      expect(provider.result, '3333334.2');
+      expect(provider.result, 3333334.2);
     });
   });
 
@@ -119,7 +119,7 @@ void main() {
       provider.clear();
 
       expect(provider.expression, isEmpty);
-      expect(provider.result, isEmpty);
+      expect(provider.result, isNull);
     });
 
     test(
@@ -162,6 +162,28 @@ void main() {
       }
       provider.addParenthesis();
       expect(provider.expression.last, ')');
+    });
+
+    // testes para resultString
+    test('Deve retornar uma string com o resultado da expressão', () {
+      var values = ['1', '.', '2', '+', '3'];
+      for (var value in values) {
+        provider.addValue(value);
+      }
+      provider.evaluate();
+      expect(provider.resultString, '4.2');
+    });
+
+    test(
+        'Deve retornar uma string com o resultado da expressão com vírgulas (,)',
+        () {
+      var values = ['1', '.', '2', '+', '3', '3', '3', '3', '3', '3', '3'];
+      for (var value in values) {
+        provider.addValue(value);
+      }
+      provider.evaluate();
+      expect(provider.resultString, '3,333,334.2');
+      expect(provider.isResult, true);
     });
   });
 }
