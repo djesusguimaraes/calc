@@ -23,10 +23,13 @@ class MyApp extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return ChangeNotifierProvider(
-                create: (context) => ExpressionChangeNotifier(getIt.get<OperatorsBuilder>()),
-                child: const MaterialApp(debugShowCheckedModeBanner: false, home: KeyBoard()));
+                create: (context) =>
+                    ExpressionChangeNotifier(getIt.get<OperatorsProvider>()),
+                child: const MaterialApp(
+                    debugShowCheckedModeBanner: false, home: KeyBoard()));
           }
-          return const MaterialApp(home: Scaffold(body: Center(child: CircularProgressIndicator())));
+          return const MaterialApp(
+              home: Scaffold(body: Center(child: CircularProgressIndicator())));
         });
   }
 }
