@@ -65,15 +65,27 @@ class ExpressionChangeNotifier extends ChangeNotifier
         expression: expression);
 
     if (index < 0) return;
+
+    var negative = ['(', '-'];
+    var leftElements =
+        Set.from(negative + expression.sublist(index - 2, index));
+
+    if (leftElements.length == negative.length) {
+      expression.removeRange(index - 2, index);
+      notifyListeners();
+    } else {
+      expression.insertAll(index, negative);
+      notifyListeners();
+    }
   }
 
   void addParenthesis() {
-    _addValue(status.thereIsOpenParenthesis ? ')' : '(');
+    _addValue(status.hasOpenParenthesis ? ')' : '(');
     _updateStatus();
   }
 
   void evaluate() {
-    if (!status.thereIsOpenParenthesis) {
+    if (!status.hasOpenParenthesis) {
       var treatedExpression = expression.join(' ');
       result = evaluateExpression(builder, treatedExpression);
       notifyListeners();
@@ -134,7 +146,7 @@ class ExpressionChangeNotifier extends ChangeNotifier
   }
 
   void _evaluatePartial() {
-    if (expression.isNotEmpty && !status.thereIsOpenParenthesis) {
+    if (expression.isNotEmpty && !status.hasOpenParenthesis) {
       if (num.tryParse(expression.last) != null) {
         _partialResult = evaluateExpression(builder, expression.join(' '));
       } else {
