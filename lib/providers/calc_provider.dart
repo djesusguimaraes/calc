@@ -13,7 +13,7 @@ class ExpressionChangeNotifier extends ChangeNotifier
   num? result;
   num _partialResult = 0;
 
-  ExpressionStatus status = ExpressionStatus();
+  ExpressionStatus status = ExpressionStatus(postfixExpression: ['']);
 
   OperatorsProvider builder;
 
@@ -32,6 +32,16 @@ class ExpressionChangeNotifier extends ChangeNotifier
 
   String get resultString =>
       markThousand((!isResult ? _partialResult : result).toString());
+
+  String get realExpression {
+    var realExpression = expression.join(' ');
+    if (status.hasOpenParenthesis) {
+      for (var i = 0; i < status.openParenthesisCount; i++) {
+        realExpression += ' )';
+      }
+    }
+    return realExpression;
+  }
 
   bool get isResult => result != null;
 
@@ -80,16 +90,16 @@ class ExpressionChangeNotifier extends ChangeNotifier
   }
 
   void addParenthesis() {
+    // todo: organizar lógica de inserção de parênteses
     _addValue(status.hasOpenParenthesis ? ')' : '(');
     _updateStatus();
   }
 
   void evaluate() {
-    if (!status.hasOpenParenthesis) {
-      var treatedExpression = expression.join(' ');
-      result = evaluateExpression(builder, treatedExpression);
-      notifyListeners();
-    }
+    result = status.isValid
+        ? evaluateExpression(builder, status.postfixExpression)
+        : null;
+    notifyListeners();
   }
 
   void addValue(String value) {
@@ -99,11 +109,11 @@ class ExpressionChangeNotifier extends ChangeNotifier
   }
 
   void _addValue(String value) {
-    var realExpression = expression.isNotEmpty ? expression.last : '';
+    var lastOperand = expression.isNotEmpty ? expression.last : '';
     bool isLastValueANumber =
-        expression.isNotEmpty ? num.tryParse(realExpression) != null : false;
+        expression.isNotEmpty ? num.tryParse(lastOperand) != null : false;
     bool isLastADot =
-        expression.isNotEmpty ? realExpression.split('').last == '.' : false;
+        expression.isNotEmpty ? lastOperand.split('').last == '.' : false;
 
     if (value == '.' && isLastADot) return;
 
@@ -132,7 +142,7 @@ class ExpressionChangeNotifier extends ChangeNotifier
 
     bool isValueAnOperator = builder.itsOperator(value) != null;
     bool isLastValueAnOperator = expression.isNotEmpty
-        ? builder.itsOperator(realExpression) != null
+        ? builder.itsOperator(lastOperand) != null
         : false;
     if (isValueAnOperator && isLastValueAnOperator) {
       expression.removeLast();
@@ -146,19 +156,17 @@ class ExpressionChangeNotifier extends ChangeNotifier
   }
 
   void _evaluatePartial() {
-    if (expression.isNotEmpty && !status.hasOpenParenthesis) {
-      if (num.tryParse(expression.last) != null) {
-        _partialResult = evaluateExpression(builder, expression.join(' '));
-      } else {
-        _partialResult = 0;
-      }
+    if (expression.isNotEmpty) {
+      _partialResult = status.isValid
+          ? evaluateExpression(builder, status.postfixExpression)
+          : 0;
       notifyListeners();
     }
   }
 
   void _updateStatus() {
     if (expression.isNotEmpty) {
-      status = infixToPostfix(builder, expression.join(' '));
+      status = infixToPostfix(builder, realExpression);
     }
   }
 }
