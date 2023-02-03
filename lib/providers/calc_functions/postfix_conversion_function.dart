@@ -7,18 +7,18 @@ ExpressionStatus infixToPostfix(OperatorsProvider builder, String infix) {
   List<String> result = [];
   List<Operator> stack = [];
 
-  bool hasOpenParenthesis = false;
+  int openParenthesisCount = 0;
 
   List<String> infixList = infix.split(' ');
   for (var element in infixList) {
     if (element == '(') {
-      hasOpenParenthesis = true;
+      openParenthesisCount++;
       stack.add(builder.open);
       continue;
     }
 
     if (element == ')') {
-      hasOpenParenthesis = false;
+      openParenthesisCount--;
       var reversed = stack.reversed.toList();
       for (var element in reversed) {
         stack.removeLast();
@@ -63,6 +63,6 @@ ExpressionStatus infixToPostfix(OperatorsProvider builder, String infix) {
   return ExpressionStatus(
       lastOperandType:
           result.isNotEmpty ? OperandType.fromString(result.last) : null,
-      thereIsOpenParenthesis: hasOpenParenthesis,
+      openParenthesisCount: openParenthesisCount,
       postfixExpression: result);
 }

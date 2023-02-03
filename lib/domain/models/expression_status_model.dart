@@ -3,11 +3,13 @@ import '../enums/operand_type_enum.dart';
 class ExpressionStatus {
   final List<String> postfixExpression;
   final OperandType? lastOperandType;
-  final bool thereIsOpenParenthesis;
+  final int openParenthesisCount;
 
   ExpressionStatus({
     this.lastOperandType,
     this.postfixExpression = const [''],
-    this.thereIsOpenParenthesis = false,
+    this.openParenthesisCount = 0,
   });
+
+  bool get hasOpenParenthesis => openParenthesisCount > 0;
 }
