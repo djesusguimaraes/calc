@@ -1,4 +1,3 @@
-import 'package:ui_plays/domain/enums/operand_type_enum.dart';
 import 'package:ui_plays/domain/models/expression_status_model.dart';
 
 import '../../domain/models/operators_model.dart';
@@ -61,8 +60,7 @@ ExpressionStatus infixToPostfix(OperatorsProvider builder, String infix) {
   }
 
   return ExpressionStatus(
-      lastOperandType:
-          result.isNotEmpty ? OperandType.fromString(result.last) : null,
-      openParenthesisCount: openParenthesisCount,
-      postfixExpression: result);
+    openParenthesisCount: openParenthesisCount,
+    postfixExpression: result,
+  );
 }
