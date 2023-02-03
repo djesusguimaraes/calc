@@ -186,4 +186,28 @@ void main() {
       expect(provider.isResult, true);
     });
   });
+
+  group('Testes de mudança de sinal:', () {
+    late ExpressionChangeNotifier provider;
+
+    setUp(() => provider = ExpressionChangeNotifier(builder));
+
+    test('Deve mudar o sinal de um número positivo para negativo', () {
+      var values = ['1', '.', '2', '+', '3'];
+      for (var value in values) {
+        provider.addValue(value);
+      }
+      provider.changeSign(7);
+      expect(provider.expression, ['1.2', '+', '(', '-', '3']);
+    });
+
+    test('Deve mudar o sinal de um número negativo para positivo', () {
+      var values = ['1', '.', '2', '+', '(', '-', '3'];
+      for (var value in values) {
+        provider.addValue(value);
+      }
+      provider.changeSign(8);
+      expect(provider.expression, ['1.2', '+', '3']);
+    });
+  });
 }

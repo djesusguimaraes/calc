@@ -36,14 +36,14 @@ void main() {
         'A função deve retornar thereIsOpenParenthesis == true para "A * ( B + C / D"',
         () {
       var result = infixToPostfix(builder, 'A * ( B + C / D');
-      expect(result.thereIsOpenParenthesis, true);
+      expect(result.hasOpenParenthesis, true);
     });
 
     test(
         'A função deve retornar thereIsOpenParenthesis == false para "A * B ) + C / D"',
         () {
       var result = infixToPostfix(builder, 'A * B ) + C / D');
-      expect(result.thereIsOpenParenthesis, false);
+      expect(result.hasOpenParenthesis, false);
     });
 
     test(

@@ -1,11 +1,5 @@
-import 'dart:developer';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ui_plays/domain/utils/string_list_index_adapter_util.dart';
-
-var expression = ['1234', '+', '236'];
-
-var expressionString = '1234 + 236';
 
 class StringListAdapterTest with StringListIndexAdapterUtil {}
 
@@ -13,6 +7,10 @@ void main() {
   group('Teste StringListIndexAdapterUtil:', () {
     late StringListAdapterTest stringListAdapter;
     setUp(() => stringListAdapter = StringListAdapterTest());
+
+    var expression = ['1234', '+', '236'];
+
+    var expressionString = '1234 + 236';
 
     test(
         'Deve indentificar o elemento "0" no array baseada nos offsets no intervalo [0-4]',
@@ -24,6 +22,7 @@ void main() {
               expressionString: expressionString,
               expression: expression),
           0,
+          reason: "Offset: $i",
         );
       }
     });
@@ -38,6 +37,7 @@ void main() {
               expressionString: expressionString,
               expression: expression),
           2,
+          reason: "Offset: $i",
         );
       }
     });
@@ -66,8 +66,29 @@ void main() {
             expression: expression,
           ),
           expects.elementAt(j),
+          reason: "Offset: $i\nExpect: ${expects.elementAt(j)}",
         );
       }
+    });
+  });
+
+  group('Teste de recuperação de valor com sinal invertido:', () {
+    late StringListAdapterTest stringListAdapter;
+    setUp(() => stringListAdapter = StringListAdapterTest());
+
+    var expression = ['1.2', '+', '(', '-', '3'];
+
+    var expressionString = '1.2 + ( - 3';
+
+    test('Deve retornar o valor com sinal invertido', () {
+      expect(
+        stringListAdapter.foundItemIndexByCursorPos(
+          offset: 8,
+          expressionString: expressionString,
+          expression: expression,
+        ),
+        4,
+      );
     });
   });
 }
