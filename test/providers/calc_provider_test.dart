@@ -35,6 +35,45 @@ void main() {
 
       expect(provider.result, 3333334.2);
     });
+
+    test('Deve retornar uma string com o resultado da expressão', () {
+      var values = ['1', '.', '2', '+', '3'];
+      for (var value in values) {
+        provider.addValue(value);
+      }
+      provider.evaluate();
+      expect(provider.resultString, '4.2');
+    });
+
+    test(r'''Deve retornar uma string com o
+        resultado da expressão com vírgulas (,)''', () {
+      var values = ['1', '.', '2', '+', '3', '3', '3', '3', '3', '3', '3'];
+      for (var value in values) {
+        provider.addValue(value);
+      }
+      provider.evaluate();
+      expect(provider.resultString, '3,333,334.2');
+      expect(provider.isResult, true);
+    });
+
+    test('Deve retornar o resultado da expressão com parênteses', () {
+      var values = ['1', '.', '2', '+', '(', '3', '+', '3', ')'];
+      for (var value in values) {
+        provider.addValue(value);
+      }
+      provider.evaluate();
+      expect(provider.result, 7.2);
+    });
+
+    test('Deve retornar o resultado da expressão memso com parênteses aberto',
+        () {
+      var values = ['1', '.', '2', '+', '(', '3', '+', '3'];
+      for (var value in values) {
+        provider.addValue(value);
+      }
+      provider.evaluate();
+      expect(provider.result, 7.2);
+    });
   });
 
   group('Teste de inserção de valores na expressão:', () {
@@ -147,12 +186,6 @@ void main() {
       expect(provider.expression, ['(']);
     });
 
-    test('Deve inserir um parêntese fechado ")" para a expressão "("', () {
-      provider.addParenthesis();
-      provider.addParenthesis();
-      expect(provider.expression.last, ')');
-    });
-
     test(
         'Deve inserir um parêntese fechado ")" para a expressão "1.2 + ( 3 - 1"',
         () {
@@ -161,29 +194,7 @@ void main() {
         provider.addValue(value);
       }
       provider.addParenthesis();
-      expect(provider.expression.last, ')');
-    });
-
-    // testes para resultString
-    test('Deve retornar uma string com o resultado da expressão', () {
-      var values = ['1', '.', '2', '+', '3'];
-      for (var value in values) {
-        provider.addValue(value);
-      }
-      provider.evaluate();
-      expect(provider.resultString, '4.2');
-    });
-
-    test(
-        'Deve retornar uma string com o resultado da expressão com vírgulas (,)',
-        () {
-      var values = ['1', '.', '2', '+', '3', '3', '3', '3', '3', '3', '3'];
-      for (var value in values) {
-        provider.addValue(value);
-      }
-      provider.evaluate();
-      expect(provider.resultString, '3,333,334.2');
-      expect(provider.isResult, true);
+      expect(provider.realExpression.endsWith(')'), true);
     });
   });
 
