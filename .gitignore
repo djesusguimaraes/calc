@@ -3,6 +3,7 @@
 *.log
 *.pyc
 *.swp
+*.lock
 .DS_Store
 .atom/
 .buildlog/
@@ -10,7 +11,8 @@
 .svn/
 migrate_working_dir/
 coverage/
-
+.vscode/
+.fvm/flutter_sdk
 # IntelliJ related
 *.iml
 *.ipr
